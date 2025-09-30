@@ -1,0 +1,282 @@
+<?xml version="1.0"?>
+<robot name="peper">
+
+    <material name = "grey">
+        <color rgba = "0.9 0.9 0.9 1"/>
+    </material>
+
+    <material name = "red">
+        <color rgba = "1.0 0.0 0.01 1.0"/>
+    </material>
+
+    <link name="base_link"/>
+
+    <!--//////////////////////////// Legs and base ///////////////////////////////-->
+    <link name = "base">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/leg.stl" scale = "1 1 1"/>
+            </geometry>
+            <material name = "grey"/>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/leg.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name = "base_to_base" type = "fixed">
+        <origin xyz = "0 0 0" rpy = " 0 0 0"/>
+        <parent link = "base_link"/>
+        <child link = "base"/>
+    </joint>  
+
+    <link name = "legs"> 
+        <visual>
+            <origin xyz = "0 0 0.0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/lower_body.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+        <origin xyz = "0 0 0.0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/lower_body.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name = "base_to_legs" type ="revolute">
+        <origin xyz = "0 0 0.35" rpy = "0 0 0"/>
+        <parent link = "base"/>
+        <child link = "legs"/>
+        <axis xyz="1.0 0 0"/>
+        <limit effort="1000.0" velocity="0.5" lower="-0.2" upper="0.3"/> 
+    </joint>  
+    <!--//////////////////////////// chest ///////////////////////////////-->
+
+    <link name = "chest">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/chest.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/chest.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <joint name = "chest_to_leg" type = "revolute">
+        <parent link = "legs"/>
+        <child link = "chest"/>
+        <origin xyz = "0 0 0.325 "/>
+        <axis xyz = "1.0 0 0"/>
+        <limit effort="1000.0" velocity="0.5" lower="-0.2" upper="0.3"/>
+    </joint>
+
+<!--//////////////////////////// Right Shoulder ///////////////////////////////-->
+
+    <link name = "r_sho">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/r_shoulder.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/r_shoulder.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name = "r_sho_to_chest" type = "revolute">
+        <parent link = "chest"/>
+        <child link = "r_sho"/>
+        <origin xyz = "0.144 0.046 0.24 "/>
+        <axis xyz="0 1 0"/>
+        <limit effort="1000.0" velocity="0.5" lower="0" upper="-2.09"/>
+    </joint>
+<!--//////////////////////////// Left Shoulder ///////////////////////////////-->
+
+    <link name = "l_sho">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/l_shoulder.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/l_shoulder.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name = "l_sho_to_chest" type = "revolute">
+        <parent link = "chest"/>
+        <child link = "l_sho"/>
+        <origin xyz = "-0.144 0.046 0.24 "/>
+        <axis xyz="0 1 0"/>
+        <limit effort="1000" velocity="0.5" lower="0" upper="2.09"/>
+    </joint>
+<!--//////////////////////////// Right Arm ///////////////////////////////-->
+
+    <link name = "r_arm">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/r_arm.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/r_arm.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name = "r_arm_to_shoulder" type = "revolute">
+        <parent link = "r_sho"/>
+        <child link = "r_arm"/>
+        <origin xyz = "0.039037 -0.001973 -0.190042"/>
+        <axis xyz="1 0 0"/>
+        <limit effort="1000.0" velocity="0.5" lower="0" upper="-1.57"/>
+    </joint>
+<!--//////////////////////////// Left Arm ///////////////////////////////-->
+
+    <link name = "l_arm">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/l_arm.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/l_arm.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name = "l_arm_to_shoulder" type = "revolute">
+        <parent link = "l_sho"/>
+        <child link = "l_arm"/>
+        <origin xyz = "-0.039037 -0.001973 -0.190042"/>
+        <axis xyz="1 0 0"/>
+        <limit effort="1000.0" velocity="0.5" lower="0" upper="-1.57"/>
+    </joint>
+<!--//////////////////////////// Right hand ///////////////////////////////-->
+
+    <link name = "r_hand">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/r_hand.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/r_hand.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name = "r_hand_to_arm" type = "revolute">
+        <parent link = "r_arm"/>
+        <child link = "r_hand"/>
+        <origin xyz = "-0.001051 -0.006148 -0.169538"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1000" velocity="0.5" lower="-1.57" upper="1.57"/>
+    </joint>
+<!--//////////////////////////// Left hand ///////////////////////////////-->
+
+    <link name = "l_hand">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/l_hand.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/l_hand.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name = "l_hand_to_arm" type = "revolute">
+        <parent link = "l_arm"/>
+        <child link = "l_hand"/>
+        <origin xyz = "0.001051 -0.006148 -0.169538"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1000" velocity="0.5" lower="-1.57" upper="1.57"/>
+    </joint>
+<!--//////////////////////////// Head ///////////////////////////////-->
+
+    <link name = "head">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/head.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/head.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name = "head_to_chest" type = "revolute">
+        <parent link = "neck"/>
+        <child link = "head"/>
+        <origin xyz = "0 0 0.03 "/>
+        <axis xyz="1 0 0"/>
+        <limit effort="1000.0" velocity="0.5" lower="-0.523" upper="0.785"/>
+    </joint>
+<!--//////////////////////////// NECK ///////////////////////////////-->
+    <link name="neck">
+        <visual>
+            <origin xyz = "0 0 0"/>
+            <material name = "grey"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/neck.stl" scale = "1 1 1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz = "0 0 0"/>
+            <geometry>
+                <mesh filename = "package://rosPackage/urdf/peperParts/parts/neck.stl" scale = "1 1 1"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="neck_to_chest" type="revolute">
+        <origin xyz="0 0.015 0.310"/>
+        <parent link="chest"/>
+        <child link="neck"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="1000.0" velocity="0.5" lower="-0.75" upper="0.75"/>
+    </joint>
+
+</robot>
+
+
+

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="pepper">
+
+  <!-- Include sensors -->
+  <xacro:include filename="$(find urdf_challenge)/urdf/sensors/imu.urdf.xacro"/>
+  <xacro:include filename="$(find urdf_challenge)/urdf/sensors/lidar.urdf.xacro"/>
+  <xacro:include filename="$(find urdf_challenge)/urdf/sensors/camera_color.urdf.xacro"/>
+  <xacro:include filename="$(find urdf_challenge)/urdf/sensors/camera_rgbd.urdf.xacro"/>
+
+  <xacro:macro name="pepper" params="name use_sensors:=true">
+    <!-- Base link -->
+    <link name="base_link">
+      <visual>
+        <!-- TODO: Replace with mesh from repo -->
+        <geometry><box size="0.3 0.3 0.3"/></geometry>
+        <material><color rgba="0.8 0.8 0.8 1.0"/></material>
+      </visual>
+      <collision><geometry><box size="0.3 0.3 0.3"/></geometry></collision>
+      <inertial>
+        <!-- TODO_FILL_MASS -->
+        <mass value="10.0"/>
+        <!-- TODO_FILL_INERTIA -->
+        <inertia ixx="1.0" iyy="1.0" izz="1.0" ixy="0" ixz="0" iyz="0"/>
+      </inertial>
+    </link>
+
+    <!-- TODO: Add joints/links for pepper (arms, wheels, etc.) -->
+
+    <xacro:if value="${use_sensors}">
+      <xacro:imu parent="base_link" frame="imu_link"/>
+      <xacro:lidar parent="base_link" frame="lidar_link"/>
+      <xacro:camera_color parent="base_link" frame="camera_link"/>
+    </xacro:if>
+  </xacro:macro>
+</robot>
