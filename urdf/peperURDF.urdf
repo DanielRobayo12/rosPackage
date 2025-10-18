@@ -377,168 +377,94 @@
     <limit effort="1000" velocity="0.5" lower="-0.75" upper="0.75"/>
   </joint>
 
-  <!-- === Sistemas de control / estados dentro de Gazebo Sim === -->
-<gazebo>
-    <!-- ===== Control de posición por PID (uno por junta) ===== -->
-  
-    <!-- tronco/piernas -->
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>base_to_legs</joint_name>
-      <topic>/gz/hmd/base_to_legs/cmd</topic>
-      <p_gain>80</p_gain><i_gain>0.2</i_gain><d_gain>6.0</d_gain>
-      <cmd_max>300</cmd_max><cmd_min>-300</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>chest_to_leg</joint_name>
-      <topic>/gz/hmd/chest_to_leg/cmd</topic>
-      <p_gain>80</p_gain><i_gain>0.2</i_gain><d_gain>6.0</d_gain>
-      <cmd_max>300</cmd_max><cmd_min>-300</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <!-- cuello y cabeza -->
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>neck_to_chest</joint_name>
-      <topic>/gz/hmd/neck_yaw/cmd</topic>
-      <p_gain>80</p_gain><i_gain>0.2</i_gain><d_gain>6.0</d_gain>
-      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>head_to_chest</joint_name>
-      <topic>/gz/hmd/neck_pitch/cmd</topic>
-      <p_gain>80</p_gain><i_gain>0.2</i_gain><d_gain>6.0</d_gain>
-      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <!-- hombro izquierdo -->
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>l_sho_to_chest_roll</joint_name>
-      <topic>/gz/hmd/l_sho_to_chest_roll/cmd</topic>
-      <p_gain>70</p_gain><i_gain>0.15</i_gain><d_gain>5.0</d_gain>
-      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>l_sho_to_chest_pitch</joint_name>
-      <topic>/gz/hmd/l_sho_to_chest_pitch/cmd</topic>
-      <p_gain>70</p_gain><i_gain>0.15</i_gain><d_gain>5.0</d_gain>
-      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <!-- codo / antebrazo izquierdo -->
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>l_arm_to_shoulder_pitch</joint_name>
-      <topic>/gz/hmd/l_arm_to_shoulder_pitch/cmd</topic>
-      <p_gain>60</p_gain><i_gain>0.1</i_gain><d_gain>4.0</d_gain>
-      <cmd_max>150</cmd_max><cmd_min>-150</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>l_arm_to_shoulder_yaw</joint_name>
-      <topic>/gz/hmd/l_arm_to_shoulder_yaw/cmd</topic>
-      <p_gain>60</p_gain><i_gain>0.1</i_gain><d_gain>4.0</d_gain>
-      <cmd_max>150</cmd_max><cmd_min>-150</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <!-- hombro derecho -->
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>r_sho_to_chest_roll</joint_name>
-      <topic>/gz/hmd/r_sho_to_chest_roll/cmd</topic>
-      <p_gain>70</p_gain><i_gain>0.15</i_gain><d_gain>5.0</d_gain>
-      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>r_sho_to_chest_pitch</joint_name>
-      <topic>/gz/hmd/r_sho_to_chest_pitch/cmd</topic>
-      <p_gain>70</p_gain><i_gain>0.15</i_gain><d_gain>5.0</d_gain>
-      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <!-- codo / antebrazo derecho -->
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>r_arm_to_shoulder_pitch</joint_name>
-      <topic>/gz/hmd/r_arm_to_shoulder_pitch/cmd</topic>
-      <p_gain>60</p_gain><i_gain>0.1</i_gain><d_gain>4.0</d_gain>
-      <cmd_max>150</cmd_max><cmd_min>-150</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>r_arm_to_shoulder_yaw</joint_name>
-      <topic>/gz/hmd/r_arm_to_shoulder_yaw/cmd</topic>
-      <p_gain>60</p_gain><i_gain>0.1</i_gain><d_gain>4.0</d_gain>
-      <cmd_max>150</cmd_max><cmd_min>-150</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <!-- muñecas -->
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>l_hand_to_arm</joint_name>
-      <topic>/gz/hmd/l_hand_to_arm/cmd</topic>
-      <p_gain>50</p_gain><i_gain>0.1</i_gain><d_gain>3.0</d_gain>
-      <cmd_max>120</cmd_max><cmd_min>-120</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <plugin filename="gz-sim-joint-position-controller-system"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>r_hand_to_arm</joint_name>
-      <topic>/gz/hmd/r_hand_to_arm/cmd</topic>
-      <p_gain>50</p_gain><i_gain>0.1</i_gain><d_gain>3.0</d_gain>
-      <cmd_max>120</cmd_max><cmd_min>-120</cmd_min>
-      <initial_position>0.0</initial_position>
-    </plugin>
-  
-    <!-- ===== Publicador de estados (para /joint_states vía bridge) ===== -->
-    <plugin filename="gz-sim-joint-state-publisher-system"
-            name="gz::sim::systems::JointStatePublisher">
-      <!-- Mantengo tu tópico explícito -->
-      <topic>/world/hmd_world/model/hmd_head/joint_state</topic>
+  <!-- === Autocolisión: base / piernas / torso === -->
+  <gazebo reference="base"><selfCollide>true</selfCollide></gazebo>
+  <gazebo reference="legs"><selfCollide>true</selfCollide></gazebo>
+  <gazebo reference="chest"><selfCollide>true</selfCollide></gazebo>
+
+  <!-- === Autocolisión: hombros / brazos / manos === -->
+  <gazebo reference="l_sho"><selfCollide>true</selfCollide></gazebo>
+  <gazebo reference="l_sho_to_chest_intermediate"><selfCollide>true</selfCollide></gazebo>
+  <gazebo reference="l_arm"><selfCollide>true</selfCollide></gazebo>
+  <gazebo reference="l_hand"><selfCollide>true</selfCollide></gazebo>
+
+  <gazebo reference="r_sho"><selfCollide>true</selfCollide></gazebo>
+  <gazebo reference="r_sho_to_chest_intermediate"><selfCollide>true</selfCollide></gazebo>
+  <gazebo reference="r_arm"><selfCollide>true</selfCollide></gazebo>
+  <gazebo reference="r_hand"><selfCollide>true</selfCollide></gazebo>
+
+  <!-- === Autocolisión: cuello / cabeza === -->
+  <gazebo reference="neck"><selfCollide>true</selfCollide></gazebo>
+  <gazebo reference="head"><selfCollide>true</selfCollide></gazebo>
+
+  <!-- ===== ros2_control (brazos) ===== -->
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+
+    <!-- IZQ -->
+    <joint name="l_sho_to_chest_roll">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="l_sho_to_chest_pitch">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="l_arm_to_shoulder_pitch">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="l_arm_to_shoulder_yaw">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="l_hand_to_arm">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <!-- DER -->
+    <joint name="r_sho_to_chest_roll">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="r_sho_to_chest_pitch">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="r_arm_to_shoulder_pitch">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="r_arm_to_shoulder_yaw">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="r_hand_to_arm">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <!-- ===== Plugin de Gazebo para ros2_control ===== -->
+  <gazebo>
+    <plugin filename="libgz_ros2_control-system.so"
+            name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>package://oculus_hmd_bringup/config/controllers.yaml</parameters>
     </plugin>
   </gazebo>
-  <!-- === Autocolisión: base / piernas / torso === -->
-    <gazebo reference="base"><selfCollide>true</selfCollide></gazebo>
-    <gazebo reference="legs"><selfCollide>true</selfCollide></gazebo>
-    <gazebo reference="chest"><selfCollide>true</selfCollide></gazebo>
 
-    <!-- === Autocolisión: hombros / brazos / manos === -->
-    <gazebo reference="l_sho"><selfCollide>true</selfCollide></gazebo>
-    <gazebo reference="l_sho_to_chest_intermediate"><selfCollide>true</selfCollide></gazebo>
-    <gazebo reference="l_arm"><selfCollide>true</selfCollide></gazebo>
-    <gazebo reference="l_hand"><selfCollide>true</selfCollide></gazebo>
-
-    <gazebo reference="r_sho"><selfCollide>true</selfCollide></gazebo>
-    <gazebo reference="r_sho_to_chest_intermediate"><selfCollide>true</selfCollide></gazebo>
-    <gazebo reference="r_arm"><selfCollide>true</selfCollide></gazebo>
-    <gazebo reference="r_hand"><selfCollide>true</selfCollide></gazebo>
-
-    <!-- === Autocolisión: cuello / cabeza === -->
-    <gazebo reference="neck"><selfCollide>true</selfCollide></gazebo>
-    <gazebo reference="head"><selfCollide>true</selfCollide></gazebo>
 
 </robot>
