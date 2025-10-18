@@ -1,312 +1,544 @@
 <?xml version="1.0"?>
 <robot name="peper">
 
-    <material name = "grey">
-        <color rgba = "0.9 0.9 0.9 1"/>
-    </material>
+  <!-- Materiales (igual que antes) -->
+  <material name="grey"><color rgba="0.9 0.9 0.9 1"/></material>
+  <material name="red"><color rgba="1.0 0.0 0.01 1.0"/></material>
 
-    <material name = "red">
-        <color rgba = "1.0 0.0 0.01 1.0"/>
-    </material>
+  <!-- Frame raíz virtual: masa mínima para evitar que GZ lo elimine -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="1e-3" iyy="1e-3" izz="1e-3" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
 
-    <link name="base_link"/>
+  <!-- //////////////////////////// Base (Base with Wheels) //////////////////////////// -->
+  <link name="base">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/leg.stl" scale="1 1 1"/></geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/leg.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Base with Wheels (KneePitch) -->
+    <inertial>
+      <origin xyz="0.00249 0 -0.20536" rpy="0 0 0"/>
+      <mass value="15.485"/>
+      <!-- Diagonalizada y positiva, magnitud cercana a la oficial -->
+      <inertia ixx="0.87" iyy="0.86" izz="0.86" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
 
-    <!--//////////////////////////// Legs and base ///////////////////////////////-->
-    <link name = "base">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/leg.stl" scale = "1 1 1"/>
-            </geometry>
-            <material name = "grey"/>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/leg.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
+  <joint name="base_to_base" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="base"/>
+  </joint>
 
-    <joint name = "base_to_base" type = "fixed">
-        <origin xyz = "0 0 0" rpy = " 0 0 0"/>
-        <parent link = "base_link"/>
-        <child link = "base"/>
-    </joint>  
+  <!-- //////////////////////////// Piernas (Hip + Thighs) //////////////////////////// -->
+  <link name="legs">
+    <visual>
+      <origin xyz="0 0 0.0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/lower_body.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/lower_body.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Hip + Thighs (sumado para no perder masa) -->
+    <inertial>
+      <!-- Aproximo el CoM combinando Hip (0,0,-0.06039) y Thighs (0.00237,0,-0.09654);
+           siéntete libre de afinarlo tras ver la pose en GZ -->
+      <origin xyz="0.0020 0 -0.085" rpy="0 0 0"/>
+      <mass value="3.4826"/> <!-- 1.0234 + 2.4592 -->
+      <inertia ixx="0.066" iyy="0.063" izz="0.055" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
 
-    <link name = "legs"> 
-        <visual>
-            <origin xyz = "0 0 0.0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/lower_body.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-        <origin xyz = "0 0 0.0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/lower_body.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
+  <joint name="base_to_legs" type="revolute">
+    <origin xyz="0 0 0.35" rpy="0 0 0"/>
+    <parent link="base"/>
+    <child link="legs"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="0.5" lower="-0.6" upper="0.6"/>
+  </joint>
 
-    <joint name = "base_to_legs" type ="revolute">
-        <origin xyz = "0 0 0.35" rpy = "0 0 0"/>
-        <parent link = "base"/>
-        <child link = "legs"/>
-        <axis xyz="1.0 0 0"/>
-        <limit effort="1000.0" velocity="0.5" lower="-0.6" upper="0.6"/> 
-    </joint>  
-    <!--//////////////////////////// chest ///////////////////////////////-->
+  <!-- //////////////////////////// Pecho (Torso) //////////////////////////// -->
+  <link name="chest">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/chest.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/chest.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Torso -->
+    <inertial>
+      <origin xyz="0.00322 0 -0.01029" rpy="0 0 0"/>
+      <mass value="3.9953"/>
+      <inertia ixx="0.0457" iyy="0.0437" izz="0.0226" ixy="0" ixz="-0.0051" iyz="0"/>
+    </inertial>
+  </link>
 
-    <link name = "chest">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/chest.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/chest.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
-    
-    <joint name = "chest_to_leg" type = "revolute">
-        <parent link = "legs"/>
-        <child link = "chest"/>
-        <origin xyz = "0 0 0.325 "/>
-        <axis xyz = "1.0 0 0"/>
-        <limit effort="1000.0" velocity="0.5" lower="-0.3" upper="0.6"/>
-    </joint>
+  <joint name="chest_to_leg" type="revolute">
+    <parent link="legs"/>
+    <child link="chest"/>
+    <origin xyz="0 0 0.325"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="0.5" lower="-0.3" upper="0.6"/>
+  </joint>
 
-<!--//////////////////////////// left Shoulder ///////////////////////////////-->
+  <!-- //////////////////////////// Hombro Izquierdo //////////////////////////// -->
+  <link name="l_sho">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/copi_left_sho.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/copi_left_sho.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Left Bicep (LShoulderRoll) -->
+    <inertial>
+      <origin xyz="0.08151 0.01284 -0.01017" rpy="0 0 0"/>
+      <mass value="0.50527"/>
+      <inertia ixx="0.00064" iyy="0.00467" izz="0.00472" ixy="0.00056" ixz="-0.00050" iyz="-0.00008"/>
+    </inertial>
+  </link>
 
-    <link name = "l_sho">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/copi_left_sho.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/copi_left_sho.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
-    <link name="l_sho_to_chest_intermediate"/>
-    <joint name = "l_sho_to_chest_roll" type = "revolute">
-        <parent link = "chest"/>
-        <child link = "l_sho_to_chest_intermediate"/>
-        <origin xyz = "0.19 0.046 0.24 " />
-        <axis xyz="0 1 0"/>
-        <limit effort="1000.0" velocity="0.5" lower="-1.57" upper="0"/>
-    </joint>
-    <joint name = "l_sho_to_chest_pitch" type = "revolute">
-        <parent link = "l_sho_to_chest_intermediate"/>
-        <child link = "l_sho"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <axis xyz="1 0 0"/>
-        <limit effort="1000" velocity="0.5" lower="-3.14" upper="0.785"/>
-    </joint>
-<!--//////////////////////////// Right Shoulder ///////////////////////////////-->
+  <link name="l_sho_to_chest_intermediate">
+    <!-- Left Shoulder (LShoulderPitch) -->
+    <inertial>
+      <origin xyz="0.00018 -0.01856 0.00099" rpy="0 0 0"/>
+      <mass value="0.3125"/>
+      <inertia ixx="0.00047" iyy="0.00014" izz="0.00047" ixy="0.00000094" ixz="-0.00000058" iyz="0.00014"/>
+    </inertial>
+  </link>
 
-    <link name = "r_sho">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/copi_right_sho.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/copi_right_sho.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
-    <link name="r_sho_to_chest_intermediate"/>
-    <joint name = "r_sho_to_chest_roll" type = "revolute">
-        <parent link = "chest"/>
-        <child link = "r_sho_to_chest_intermediate"/>
-        <origin xyz = "-0.19 0.046 0.24 "/>
-        <axis xyz="0 1 0"/>
-        <limit effort="1000" velocity="0.5" lower="0" upper="1.57"/>
-    </joint>
-    <joint name = "r_sho_to_chest_pitch" type = "revolute">
-        <parent link = "r_sho_to_chest_intermediate"/>
-        <child link = "r_sho"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <axis xyz="1 0 0"/>
-        <limit effort="1000" velocity="0.5" lower="-3.14" upper="0.785"/>
-    </joint>
-<!--//////////////////////////// left Arm ///////////////////////////////-->
+  <joint name="l_sho_to_chest_roll" type="revolute">
+    <parent link="chest"/>
+    <child link="l_sho_to_chest_intermediate"/>
+    <origin xyz="0.19 0.046 0.24"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="0.5" lower="-1.57" upper="0"/>
+  </joint>
 
-    <link name = "l_arm">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/left_arm.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/left_arm.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
-    <link name="l_sho_to_arm_intermediate"/>
-    <joint name = "l_arm_to_shoulder_pitch" type = "revolute">
-        <parent link = "l_sho"/>
-        <child link = "l_sho_to_arm_intermediate"/>
-        <origin xyz = "-0.002364 -0.002364 -0.190042" rpy = "0 0 0"/>
-        <axis xyz="1 0 0"/>
-        <limit effort="1000.0" velocity="0.5" lower="-1.57" upper="0"/>
-    </joint>
-    <joint name = "l_arm_to_shoulder_yaw" type = "revolute">
-        <parent link = "l_sho_to_arm_intermediate"/>
-        <child link = "l_arm"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <axis xyz="0 0 1"/>
-        <limit effort="1000.0" velocity="0.5" lower="-3.925" upper="0"/>
-    </joint>
-    
-<!--//////////////////////////// Right Arm ///////////////////////////////-->
+  <joint name="l_sho_to_chest_pitch" type="revolute">
+    <parent link="l_sho_to_chest_intermediate"/>
+    <child link="l_sho"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="0.5" lower="-3.14" upper="0.785"/>
+  </joint>
 
-    <link name = "r_arm">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/right_arm.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/right_arm.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
-    <link name="r_sho_to_arm_intermediate"/>
-    <joint name = "r_arm_to_shoulder_pitch" type = "revolute">
-        <parent link = "r_sho"/>
-        <child link = "r_sho_to_arm_intermediate"/>
-        <origin xyz = "-0.002364 -0.002364 -0.190042" rpy = "0 0 0"/>
-        <axis xyz="1 0 0"/>
-        <limit effort="1000.0" velocity="0.5" lower="-1.57" upper="0"/>
-    </joint>
-    <joint name = "r_arm_to_shoulder_yaw" type = "revolute">
-        <parent link = "r_sho_to_arm_intermediate"/>
-        <child link = "r_arm"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <axis xyz="0 0 1"/>
-        <limit effort="1000.0" velocity="0.5" lower="0" upper="3.925"/>
-    </joint>
-<!--//////////////////////////// left hand ///////////////////////////////-->
+  <!-- //////////////////////////// Hombro Derecho //////////////////////////// -->
+  <link name="r_sho">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/copi_right_sho.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/copi_right_sho.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Right Bicep (RShoulderRoll) -->
+    <inertial>
+      <origin xyz="0.08151 -0.01284 -0.01017" rpy="0 0 0"/>
+      <mass value="0.50527"/>
+      <inertia ixx="0.00064" iyy="0.00467" izz="0.00472" ixy="-0.00056" ixz="-0.00050" iyz="0.00008"/>
+    </inertial>
+  </link>
 
-    <link name = "l_hand">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/left_hand.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/left_hand.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
-    <joint name = "l_hand_to_arm" type = "revolute">
-        <parent link = "l_arm"/>
-        <child link = "l_hand"/>
-        <origin xyz = "-0.001051 -0.006148 -0.169538"/>
-        <axis xyz="0 0 1"/>
-        <limit effort="1000" velocity="0.5" lower="-1.57" upper="1.57"/>
-    </joint>
-<!--//////////////////////////// Right hand ///////////////////////////////-->
+  <link name="r_sho_to_chest_intermediate">
+    <!-- Right Shoulder (RShoulderPitch) -->
+    <inertial>
+      <origin xyz="0.00018 0.01856 0.00099" rpy="0 0 0"/>
+      <mass value="0.3125"/>
+      <inertia ixx="0.00047" iyy="0.00014" izz="0.00047" ixy="-0.00000094" ixz="-0.00000058" iyz="-0.00014"/>
+    </inertial>
+  </link>
 
-    <link name = "r_hand">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/right_hand.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/right_hand.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
-    <joint name = "r_hand_to_arm" type = "revolute">
-        <parent link = "r_arm"/>
-        <child link = "r_hand"/>
-        <origin xyz = "0.001051 -0.006148 -0.169538"/>
-        <axis xyz="0 0 1"/>
-        <limit effort="1000" velocity="0.5" lower="-1.57" upper="1.57"/>
-    </joint>
-<!--//////////////////////////// Head ///////////////////////////////-->
+  <joint name="r_sho_to_chest_roll" type="revolute">
+    <parent link="chest"/>
+    <child link="r_sho_to_chest_intermediate"/>
+    <origin xyz="-0.19 0.046 0.24"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="1000" velocity="0.5" lower="0" upper="1.57"/>
+  </joint>
 
-    <link name = "head">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/head.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/head.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
-    <joint name = "head_to_chest" type = "revolute">
-        <parent link = "neck"/>
-        <child link = "head"/>
-        <origin xyz = "0 0 0.03 "/>
-        <axis xyz="1 0 0"/>
-        <limit effort="1000.0" velocity="0.5" lower="-0.523" upper="0.785"/>
-    </joint>
-<!--//////////////////////////// NECK ///////////////////////////////-->
-    <link name="neck">
-        <visual>
-            <origin xyz = "0 0 0"/>
-            <material name = "grey"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/neck.stl" scale = "1 1 1"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz = "0 0 0"/>
-            <geometry>
-                <mesh filename = "package://rosPackage/urdf/peperParts/parts/neck.stl" scale = "1 1 1"/>
-            </geometry>
-        </collision>
-    </link>
+  <joint name="r_sho_to_chest_pitch" type="revolute">
+    <parent link="r_sho_to_chest_intermediate"/>
+    <child link="r_sho"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="0.5" lower="-3.14" upper="0.785"/>
+  </joint>
 
-    <joint name="neck_to_chest" type="revolute">
-        <origin xyz="0 0.015 0.310"/>
-        <parent link="chest"/>
-        <child link="neck"/>
-        <axis xyz="0 0 1"/>
-        <limit effort="1000.0" velocity="0.5" lower="-0.75" upper="0.75"/>
-    </joint>
+  <!-- //////////////////////////// Brazos //////////////////////////// -->
+  <link name="l_arm">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/left_arm.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/left_arm.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Left ForeArm (LElbowRoll) -->
+    <inertial>
+      <origin xyz="0.0593 0.00271 -0.01014" rpy="0 0 0"/>
+      <mass value="0.16579"/>
+      <inertia ixx="0.00158" iyy="0.00233" izz="0.00234" ixy="0.000012" ixz="-0.000039" iyz="0.000000"/>
+    </inertial>
+  </link>
+
+  <link name="l_sho_to_arm_intermediate">
+    <!-- Left Elbow (LElbowYaw) -->
+    <inertial>
+      <origin xyz="-0.02297 -0.00019 0.00119" rpy="0 0 0"/>
+      <mass value="0.27495"/>
+      <inertia ixx="0.000123" iyy="0.000477" izz="0.000478" ixy="0.00000021" ixz="0.000018" iyz="0.000002"/>
+    </inertial>
+  </link>
+
+  <joint name="l_arm_to_shoulder_pitch" type="revolute">
+    <parent link="l_sho"/>
+    <child link="l_sho_to_arm_intermediate"/>
+    <origin xyz="-0.002364 -0.002364 -0.190042"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="0.5" lower="-1.57" upper="0"/>
+  </joint>
+
+  <joint name="l_arm_to_shoulder_yaw" type="revolute">
+    <parent link="l_sho_to_arm_intermediate"/>
+    <child link="l_arm"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000" velocity="0.5" lower="-3.925" upper="0"/>
+  </joint>
+
+  <link name="r_arm">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/right_arm.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/right_arm.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Right ForeArm (RElbowRoll) -->
+    <inertial>
+      <origin xyz="0.0593 -0.00271 -0.01014" rpy="0 0 0"/>
+      <mass value="0.16579"/>
+      <inertia ixx="0.00158" iyy="0.00233" izz="0.00234" ixy="-0.000012" ixz="-0.000039" iyz="0.000000"/>
+    </inertial>
+  </link>
+
+  <link name="r_sho_to_arm_intermediate">
+    <!-- Right Elbow (RElbowYaw) -->
+    <inertial>
+      <origin xyz="-0.02297 0.00019 0.00119" rpy="0 0 0"/>
+      <mass value="0.27495"/>
+      <inertia ixx="0.000123" iyy="0.000477" izz="0.000478" ixy="-0.00000021" ixz="0.000018" iyz="-0.000002"/>
+    </inertial>
+  </link>
+
+  <joint name="r_arm_to_shoulder_pitch" type="revolute">
+    <parent link="r_sho"/>
+    <child link="r_sho_to_arm_intermediate"/>
+    <origin xyz="-0.002364 -0.002364 -0.190042"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="0.5" lower="-1.57" upper="0"/>
+  </joint>
+
+  <joint name="r_arm_to_shoulder_yaw" type="revolute">
+    <parent link="r_sho_to_arm_intermediate"/>
+    <child link="r_arm"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000" velocity="0.5" lower="0" upper="3.925"/>
+  </joint>
+
+  <!-- //////////////////////////// Manos //////////////////////////// -->
+  <link name="l_hand">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/left_hand.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/left_hand.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Left Hand (LWristYaw) -->
+    <inertial>
+      <origin xyz="0.03536 -0.00072 -0.00207" rpy="0 0 0"/>
+      <mass value="0.27555"/>
+      <inertia ixx="0.000153" iyy="0.000777" izz="0.00078" ixy="-0.0000177" ixz="-0.000023" iyz="0.0000035"/>
+    </inertial>
+  </link>
+
+  <joint name="l_hand_to_arm" type="revolute">
+    <parent link="l_arm"/>
+    <child link="l_hand"/>
+    <origin xyz="-0.001051 -0.006148 -0.169538"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000" velocity="0.5" lower="-1.57" upper="1.57"/>
+  </joint>
+
+  <link name="r_hand">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/right_hand.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/right_hand.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Right Hand (RWristYaw) -->
+    <inertial>
+      <origin xyz="0.03536 0.00072 -0.00207" rpy="0 0 0"/>
+      <mass value="0.27555"/>
+      <inertia ixx="0.000153" iyy="0.000777" izz="0.00078" ixy="0.0000177" ixz="-0.000023" iyz="-0.0000035"/>
+    </inertial>
+  </link>
+
+  <joint name="r_hand_to_arm" type="revolute">
+    <parent link="r_arm"/>
+    <child link="r_hand"/>
+    <origin xyz="0.001051 -0.006148 -0.169538"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000" velocity="0.5" lower="-1.57" upper="1.57"/>
+  </joint>
+
+  <!-- //////////////////////////// Cabeza y cuello //////////////////////////// -->
+  <link name="head">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/head.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/head.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Head (HeadPitch) -->
+    <inertial>
+      <origin xyz="0.00312 0 0.11152" rpy="0 0 0"/>
+      <mass value="1.5189"/>
+      <inertia ixx="0.02486" iyy="0.02481" izz="0.0252" ixy="0" ixz="0.000403" iyz="0"/>
+    </inertial>
+  </link>
+
+  <joint name="head_to_chest" type="revolute">
+    <parent link="neck"/>
+    <child link="head"/>
+    <origin xyz="0 0 0.03"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="1000" velocity="0.5" lower="-0.523" upper="0.785"/>
+  </joint>
+
+  <link name="neck">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <material name="grey"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/neck.stl" scale="1 1 1"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><mesh filename="package://rosPackage/urdf/peperParts/parts/neck.stl" scale="1 1 1"/></geometry>
+    </collision>
+    <!-- Neck (HeadYaw) -->
+    <inertial>
+      <origin xyz="-0.00207 0 -0.02636" rpy="0 0 0"/>
+      <mass value="0.27391"/>
+      <inertia ixx="0.000534" iyy="0.000685" izz="0.00061" ixy="0" ixz="0.0000338" iyz="0"/>
+    </inertial>
+  </link>
+
+  <joint name="neck_to_chest" type="revolute">
+    <origin xyz="0 0.015 0.310"/>
+    <parent link="chest"/>
+    <child link="neck"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000" velocity="0.5" lower="-0.75" upper="0.75"/>
+  </joint>
+
+  <!-- === Sistemas de control / estados dentro de Gazebo Sim === -->
+<gazebo>
+    <!-- ===== Control de posición por PID (uno por junta) ===== -->
+  
+    <!-- tronco/piernas -->
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>base_to_legs</joint_name>
+      <topic>/gz/hmd/base_to_legs/cmd</topic>
+      <p_gain>80</p_gain><i_gain>0.2</i_gain><d_gain>6.0</d_gain>
+      <cmd_max>300</cmd_max><cmd_min>-300</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>chest_to_leg</joint_name>
+      <topic>/gz/hmd/chest_to_leg/cmd</topic>
+      <p_gain>80</p_gain><i_gain>0.2</i_gain><d_gain>6.0</d_gain>
+      <cmd_max>300</cmd_max><cmd_min>-300</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <!-- cuello y cabeza -->
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>neck_to_chest</joint_name>
+      <topic>/gz/hmd/neck_yaw/cmd</topic>
+      <p_gain>80</p_gain><i_gain>0.2</i_gain><d_gain>6.0</d_gain>
+      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>head_to_chest</joint_name>
+      <topic>/gz/hmd/neck_pitch/cmd</topic>
+      <p_gain>80</p_gain><i_gain>0.2</i_gain><d_gain>6.0</d_gain>
+      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <!-- hombro izquierdo -->
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>l_sho_to_chest_roll</joint_name>
+      <topic>/gz/hmd/l_sho_to_chest_roll/cmd</topic>
+      <p_gain>70</p_gain><i_gain>0.15</i_gain><d_gain>5.0</d_gain>
+      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>l_sho_to_chest_pitch</joint_name>
+      <topic>/gz/hmd/l_sho_to_chest_pitch/cmd</topic>
+      <p_gain>70</p_gain><i_gain>0.15</i_gain><d_gain>5.0</d_gain>
+      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <!-- codo / antebrazo izquierdo -->
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>l_arm_to_shoulder_pitch</joint_name>
+      <topic>/gz/hmd/l_arm_to_shoulder_pitch/cmd</topic>
+      <p_gain>60</p_gain><i_gain>0.1</i_gain><d_gain>4.0</d_gain>
+      <cmd_max>150</cmd_max><cmd_min>-150</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>l_arm_to_shoulder_yaw</joint_name>
+      <topic>/gz/hmd/l_arm_to_shoulder_yaw/cmd</topic>
+      <p_gain>60</p_gain><i_gain>0.1</i_gain><d_gain>4.0</d_gain>
+      <cmd_max>150</cmd_max><cmd_min>-150</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <!-- hombro derecho -->
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>r_sho_to_chest_roll</joint_name>
+      <topic>/gz/hmd/r_sho_to_chest_roll/cmd</topic>
+      <p_gain>70</p_gain><i_gain>0.15</i_gain><d_gain>5.0</d_gain>
+      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>r_sho_to_chest_pitch</joint_name>
+      <topic>/gz/hmd/r_sho_to_chest_pitch/cmd</topic>
+      <p_gain>70</p_gain><i_gain>0.15</i_gain><d_gain>5.0</d_gain>
+      <cmd_max>200</cmd_max><cmd_min>-200</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <!-- codo / antebrazo derecho -->
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>r_arm_to_shoulder_pitch</joint_name>
+      <topic>/gz/hmd/r_arm_to_shoulder_pitch/cmd</topic>
+      <p_gain>60</p_gain><i_gain>0.1</i_gain><d_gain>4.0</d_gain>
+      <cmd_max>150</cmd_max><cmd_min>-150</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>r_arm_to_shoulder_yaw</joint_name>
+      <topic>/gz/hmd/r_arm_to_shoulder_yaw/cmd</topic>
+      <p_gain>60</p_gain><i_gain>0.1</i_gain><d_gain>4.0</d_gain>
+      <cmd_max>150</cmd_max><cmd_min>-150</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <!-- muñecas -->
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>l_hand_to_arm</joint_name>
+      <topic>/gz/hmd/l_hand_to_arm/cmd</topic>
+      <p_gain>50</p_gain><i_gain>0.1</i_gain><d_gain>3.0</d_gain>
+      <cmd_max>120</cmd_max><cmd_min>-120</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <plugin filename="gz-sim-joint-position-controller-system"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>r_hand_to_arm</joint_name>
+      <topic>/gz/hmd/r_hand_to_arm/cmd</topic>
+      <p_gain>50</p_gain><i_gain>0.1</i_gain><d_gain>3.0</d_gain>
+      <cmd_max>120</cmd_max><cmd_min>-120</cmd_min>
+      <initial_position>0.0</initial_position>
+    </plugin>
+  
+    <!-- ===== Publicador de estados (para /joint_states vía bridge) ===== -->
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher">
+      <!-- Mantengo tu tópico explícito -->
+      <topic>/world/hmd_world/model/hmd_head/joint_state</topic>
+    </plugin>
+  </gazebo>
+  <!-- === Autocolisión: base / piernas / torso === -->
+    <gazebo reference="base"><selfCollide>true</selfCollide></gazebo>
+    <gazebo reference="legs"><selfCollide>true</selfCollide></gazebo>
+    <gazebo reference="chest"><selfCollide>true</selfCollide></gazebo>
+
+    <!-- === Autocolisión: hombros / brazos / manos === -->
+    <gazebo reference="l_sho"><selfCollide>true</selfCollide></gazebo>
+    <gazebo reference="l_sho_to_chest_intermediate"><selfCollide>true</selfCollide></gazebo>
+    <gazebo reference="l_arm"><selfCollide>true</selfCollide></gazebo>
+    <gazebo reference="l_hand"><selfCollide>true</selfCollide></gazebo>
+
+    <gazebo reference="r_sho"><selfCollide>true</selfCollide></gazebo>
+    <gazebo reference="r_sho_to_chest_intermediate"><selfCollide>true</selfCollide></gazebo>
+    <gazebo reference="r_arm"><selfCollide>true</selfCollide></gazebo>
+    <gazebo reference="r_hand"><selfCollide>true</selfCollide></gazebo>
+
+    <!-- === Autocolisión: cuello / cabeza === -->
+    <gazebo reference="neck"><selfCollide>true</selfCollide></gazebo>
+    <gazebo reference="head"><selfCollide>true</selfCollide></gazebo>
 
 </robot>
